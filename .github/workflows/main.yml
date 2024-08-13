@@ -1,0 +1,42 @@
+name: Build Tailwind CSS
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Install Tailwind CSS
+      run: npm install -D tailwindcss
+
+    - name: Initialize Tailwind CSS
+      run: npx tailwindcss init
+
+    - name: Build CSS
+      run: npx tailwindcss -i ./src/input.css -o ./src/output.css --watch & sleep 5
+
+    - name: Upload CSS artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: tailwind-css
+        path: ./src/output.css
+
+    - name: Stop Tailwind CSS build
+      run: pkill -f 'tailwindcss'
+
